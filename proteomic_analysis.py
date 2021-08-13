@@ -40,7 +40,7 @@ def perseus_analysis():
                     label_bold=False,
                     label_size=10,
                     filled_circle=True,
-                    title="Test_Volcano_mean",
+                    title="Volcano WT/NPC1 2KO",
                     fig_format="png")
     plt.show()
 
