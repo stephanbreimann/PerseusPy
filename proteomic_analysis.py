@@ -21,14 +21,15 @@ def perseus_analysis():
     # Load data
     df = pd.read_csv(FOLDER_DATA + "npc_symptomatic_mice.csv")
     # 1. Perseus Analysis
-    groups = ["Npc1-/-_8weeks", "WT_8weeks"]
+    groups = ["WT", "Npc1-/-"]
     dict_col_group = get_dict_groups(df=df, lfq_str="Log2 LFQ", groups=groups)
-    pp = PerseusPipeline(df=df, dict_col_group=dict_col_group)
+    pp = PerseusPipeline(df=df, dict_col_group=dict_col_group,
+                         groups=groups,
+                         col_acc="Protein ID")
     df_ratio_pval = pp.run(gmean=False)
-    print(df_ratio_pval)
     pp.volcano_plot(df_ratio_pval=df_ratio_pval,
-                    col_pval="-log10 p value (WT_8weeks/Npc1-/-_8weeks)",
-                    col_ratio="log2 ratio (WT_8weeks/Npc1-/-_8weeks)",
+                    col_pval="-log10 p value (WT/Npc1-/-)",
+                    col_ratio="log2 ratio (WT/Npc1-/-)",
                     th_filter=(0.05, 0.5),
                     th_text=(0.05, -2.5, 2.5),
                     force=(0.9, 0.50, 0.25),
@@ -42,6 +43,8 @@ def perseus_analysis():
                     title="Test_Volcano_mean",
                     fig_format="png")
     plt.show()
+
+
 
 # III Test/Caller Functions
 

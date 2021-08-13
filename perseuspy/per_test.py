@@ -80,16 +80,19 @@ class PerseusTests(PerseusBase):
         _check_p_correction(method=method)
         pval_str = "p value "
         dict_p_vals = {}
+        ratio_pairs = []
         for a in self.list_groups:
             for b in self.list_groups:
-                df_group_a = df_lfq[self.dict_group_cols[a]]
-                df_group_b = df_lfq[self.dict_group_cols[b]]
-                if nan_policy == "omit":
-                    p_vals = _ttest_no_warning(df_group_a, df_group_b)
-                else:
-                    p_vals = ttest_ind(df_group_a, df_group_b, axis=1, nan_policy=nan_policy)[1]
-                p_vals = _correct_p_val(p_vals=p_vals, method=method)
-                dict_p_vals[pval_str + "({}/{})".format(b, a)] = p_vals
+                if a != b and {a, b} not in ratio_pairs:
+                    df_group_a = df_lfq[self.dict_group_cols[a]]
+                    df_group_b = df_lfq[self.dict_group_cols[b]]
+                    if nan_policy == "omit":
+                        p_vals = _ttest_no_warning(df_group_a, df_group_b)
+                    else:
+                        p_vals = ttest_ind(df_group_a, df_group_b, axis=1, nan_policy=nan_policy)[1]
+                    p_vals = _correct_p_val(p_vals=p_vals, method=method)
+                    ratio_pairs.append({a, b})
+                    dict_p_vals[pval_str + "({}/{})".format(a, b)] = p_vals
         df_pval = pd.DataFrame(dict_p_vals)
         if log10_out:
             cols = ["-log10 {}".format(x) for x in list(df_pval)]

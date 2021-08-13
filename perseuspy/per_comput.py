@@ -60,6 +60,7 @@ class PerseusComputations(PerseusBase):
         for group in self.dict_group_cols:
             group_col = self.dict_group_cols[group]
             df_group = df_lfq[group_col]
+            # TODO invert log2 values
             # Calculate mean without 0
             if gmean:
                 def f(row):
@@ -89,13 +90,16 @@ class PerseusComputations(PerseusBase):
             ratio_str = "ratio "
         dict_group_col = dict(zip(self.list_groups, list(df_lfq_mean)))
         dict_ratio = {}
+        ratio_pairs = []
         for a in self.list_groups:
             for b in self.list_groups:
-                df_group_a = df_lfq_mean[dict_group_col[a]]
-                df_group_b = df_lfq_mean[dict_group_col[b]]
-                ratio = _ratio(df_group_b, df_group_a,
-                               log2_in=log2_in,
-                               log2_out=log2_out)
-                dict_ratio[ratio_str + "({}/{})".format(b, a)] = ratio
+                if a != b and {a, b} not in ratio_pairs:
+                    df_group_a = df_lfq_mean[dict_group_col[a]]
+                    df_group_b = df_lfq_mean[dict_group_col[b]]
+                    ratio = _ratio(df_group_a, df_group_b,
+                                   log2_in=log2_in,
+                                   log2_out=log2_out)
+                    ratio_pairs.append({a, b})
+                    dict_ratio[ratio_str + "({}/{})".format(a, b)] = ratio
         df_ratio = pd.DataFrame(dict_ratio, index=df_lfq_mean.index)     # Set index of data frame
         return df_ratio

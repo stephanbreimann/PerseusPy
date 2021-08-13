@@ -15,5 +15,5 @@ class PerseusImputation(PerseusBase):
     def __init__(self, **kwargs):
         PerseusBase.__init__(self, **kwargs)
 
-    # TODO implement imputation method
+    # TODO implement imputation methods
 

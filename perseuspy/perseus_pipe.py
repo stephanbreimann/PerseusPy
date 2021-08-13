@@ -16,7 +16,14 @@ from perseuspy.per_test import PerseusTests
 # II Main Functions
 class PerseusPipeline(PerseusComputations, PerseusTests, PerseusPlots):    # PerseusNormalization, PerseusImputation,
     """Class for Perseus analysis"""
-    def __init__(self, **kwargs):
+    def __init__(self, df=None, dict_col_group=None, col_acc="Protein ID", col_genes="Gene Names",
+                 pre_filtered=False, groups=None):
+        kwargs = dict(df=df,
+                      dict_col_group=dict_col_group,
+                      col_acc=col_acc,
+                      col_genes=col_genes,
+                      pre_filtered=pre_filtered,
+                      groups=groups)
         PerseusComputations.__init__(self, **kwargs)
         PerseusTests.__init__(self, **kwargs)
         PerseusPlots.__init__(self, **kwargs)

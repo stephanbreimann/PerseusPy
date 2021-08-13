@@ -27,7 +27,7 @@ COLOR_TH = "black"
 def _check_col(df, col=None):
     """Check if col in df"""
     if col not in list(df):
-        raise ValueError("{} not in {}".format(col, list(df)))
+        raise ValueError("{} should be one of following: {}".format(col, list(df)))
 
 
 def _check_gene_list(df=None, gene_list=None):
@@ -170,7 +170,8 @@ class PerseusPlots:
         -----
 
         """
-        # TODO perfect Volcano with Stephan! Adjust font Helvetica, Arial
+        # TODO Adjust font Helvetica, Arial
+        # TODO Include labeling for selected genes (e.g., for GO terms)
         # 1. Download all fonts to Fedora
         # dnf search microsoft windows fonts
         # https://www.reddit.com/r/Fedora/comments/e9ig9m/how_can_i_install_ms_fonts_particularly_times_new/
