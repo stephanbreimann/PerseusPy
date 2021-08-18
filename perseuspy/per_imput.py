@@ -13,8 +13,9 @@ References
 Notes
 -----
 8 datasets downloaded for [1] from PRIDE :
-    PXD000484
-    PXD000485
+    PXD000484 (DONE)
+    PXD000485 (DONE)
+    # TODO Include rest
     PXD004816
     PXD005065
     PXD005833
@@ -24,6 +25,7 @@ Notes
 """
 import pandas as pd
 
+import perseuspy._utils as ut
 from perseuspy.per_base import PerseusBase
 
 

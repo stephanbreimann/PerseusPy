@@ -13,6 +13,8 @@ import math
 import plotly.express as px
 from adjustText import adjust_text
 
+import perseuspy._utils as ut
+
 
 # Settings
 pd.set_option('expand_frame_repr', False)  # Single line print for pd.Dataframe
@@ -45,6 +47,14 @@ def _check_gene_values(gene=None, x=None, y=None):
         raise ValueError("Missing values for gene '{}'".format(gene))
 
 
+# TODO adjust for proper checking interface
+def _check_log_scales(x_min=None, x_max=None):
+    """"""
+    if x_min < -100 or x_max > 100:
+        raise ValueError("Check if values in log scale")
+
+
+# Filter functions
 def _color_filter(df=None, th_p=2.0, th_ratio=0.5, col_ratio=None, col_pval=None, gene_list=None):
     """Classify significant values by color"""
     colors = []
@@ -150,7 +160,7 @@ class PerseusPlots:
     @staticmethod
     def volcano_plot(df_ratio_pval=None, col_ratio=None, col_pval=None, gene_list=None, title=None,
                      th_filter=(0.05, 0.5), th_text=None, precision=0.01, force=(0.5, 0.5, 0.25), avoid_conflict=0.25,
-                     fig_format="png", verbose=False, loc_legnd=2,
+                     fig_format="png", verbose=True, loc_legnd=2,
                      filled_circle=True, box=True, label_bold=False, label_size=8, minor_ticks=True):
         """Calculate p value by a two sample ttest via FDR by Benjamini Hochberg and show volcano plot
         In: a) df_ratio_pval: df with p values and ratio
@@ -210,6 +220,8 @@ class PerseusPlots:
                                th_pos_ratio=th_pos_ratio,
                                avoid_conflict=avoid_conflict)
         x_min, x_max = math.floor(df_ratio_pval[col_ratio].min()) - 1, math.ceil(df_ratio_pval[col_ratio].max()) + 1
+        print(x_min, x_max)
+        _check_log_scales(x_min=x_min, x_max=x_max)
         y_max = 1.1 * df_ratio_pval[col_pval].max()
         # Plotting
         dict_scatter = dict(y=col_pval, x=col_ratio, kind="scatter", figsize=(5, 5))

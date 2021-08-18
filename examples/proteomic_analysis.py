@@ -7,10 +7,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from perseuspy import PerseusPipeline, get_dict_groups
+import examples._utils as ut
 
 # Settings
 pd.set_option('expand_frame_repr', False)  # Single line print for pd.Dataframe
-FOLDER_DATA = os.path.dirname(os.path.abspath(__file__)) + "/data/"
 
 # I Helper Functions
 
@@ -19,14 +19,16 @@ FOLDER_DATA = os.path.dirname(os.path.abspath(__file__)) + "/data/"
 def perseus_analysis():
     """"""
     # Load data
-    df = pd.read_csv(FOLDER_DATA + "npc_symptomatic_mice.csv")
+    folder_in = ut.FOLDER_DATA + "datasets" + ut.SEP
+    df = pd.read_csv(folder_in + "npc_symptomatic_mice.csv")
     # 1. Perseus Analysis
     groups = ["WT", "Npc1-/-"]
     dict_col_group = get_dict_groups(df=df, lfq_str="Log2 LFQ", groups=groups)
     pp = PerseusPipeline(df=df, dict_col_group=dict_col_group,
                          groups=groups,
                          col_acc="Protein ID")
-    df_ratio_pval = pp.run(gmean=False)
+    df_ratio_pval = pp.run()
+    print(df_ratio_pval.to_string())
     pp.volcano_plot(df_ratio_pval=df_ratio_pval,
                     col_pval="-log10 p value (WT/Npc1-/-)",
                     col_ratio="log2 ratio (WT/Npc1-/-)",

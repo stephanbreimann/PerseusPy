@@ -9,7 +9,7 @@ from statsmodels.stats.multitest import multipletests
 import functools
 import warnings
 
-
+import perseuspy._utils as ut
 from perseuspy.per_base import PerseusBase
 
 

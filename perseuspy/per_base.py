@@ -4,6 +4,8 @@ This is a script for basic processing in Perseus pipeline
 import numpy as np
 import warnings
 
+import perseuspy._utils as ut
+
 
 # I Helper Functions
 def _check_lfq_str(df=None, lfq_str=None, groups=None):
@@ -40,7 +42,7 @@ def _pre_filter(df=None, list_filter_col=None):
 
 
 # II Main Functions
-def get_dict_groups(df=None, lfq_str="log2 LFQ", groups=None):
+def get_dict_groups(df=None, lfq_str=ut.STR_LOG2_INTENSITY, groups=None):
     """Get dict with groups from df based on lfq_str and given groups"""
     _check_lfq_str(df=df, lfq_str=lfq_str, groups=groups)
     dict_col_group = {}
@@ -81,14 +83,22 @@ class PerseusBase:
     def get_df_lfq(self, log2_in=True, log2_out=True):
         """Get df with just LFQ values in log2 or normal scale"""
         df_lfq = self._df[self.list_col_lfq]
+        adjust = False
         if log2_out:
             if not log2_in:
-                self.list_col_lfq = ["log2 {}".format(x) for x in self.list_col_lfq]
+                f = lambda x: "log2 {}".format(x)
                 df_lfq = np.log2(df_lfq.replace(0, np.nan))
+                adjust = True
         else:
             if log2_in:
-                self.list_col_lfq = [x.replace("log2 ", "") for x in self.list_col_lfq]
+                f = lambda x: x.replace("log2 ", "")
                 df_lfq = 2 ** df_lfq
+                adjust = True
+        if adjust:
+            self.list_col_lfq = [f(x) for x in self.list_col_lfq]
+            self.dict_col_group = {col: f(self.dict_col_group[col]) for col in self.dict_col_group}
+            self.dict_group_cols = {group: [f(x) for x in self.dict_group_cols[group]]
+                                    for group in self.dict_group_cols}
         df_lfq.columns = self.list_col_lfq
         return df_lfq
 

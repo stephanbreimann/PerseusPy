@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+import perseuspy._utils as ut
 from perseuspy.per_base import PerseusBase
 
 
@@ -46,31 +47,24 @@ class PerseusComputations(PerseusBase):
     def __init__(self, **kwargs):
         PerseusBase.__init__(self, **kwargs)
 
-    def get_df_lfq_mean(self, df_lfq=None, log2_in=True, remove_nan=False, gmean=False):
+    def get_df_lfq_mean(self, df_lfq=None, log2_in=True, remove_nan=False):
         """Calculation of mean of groups for label free quantification (LFQ)
         In: a) df_lfq: df with lfq values
             b) log2_lfq: boolean to indicate if lfq values are in log2 scale
             d) remove_nan: boolean to indicate if nan should be removed if any group is completely missing
         Out:a) df_lfq_mean: df with mean lfq values for each group"""
         if log2_in:
-            lfq_str = "log2 LFQ"
+            lfq_str = ut.STR_LOG2_INTENSITY
         else:
-            lfq_str = "LFQ"
+            lfq_str = ut.STR_INTENSITY
         dict_avg = {}
         for group in self.dict_group_cols:
             group_col = self.dict_group_cols[group]
+            print(self.dict_group_cols)
             df_group = df_lfq[group_col]
             # TODO invert log2 values
             # Calculate mean without 0
-            if gmean:
-                def f(row):
-                    array = row[~row.isna()]
-                    if len(array) == 0:
-                        return np.nan
-                    return stats.gmean(array)
-                group_mean = np.nan_to_num(df_group.replace(0, np.nan).apply(f, axis=1))
-            else:
-                group_mean = df_group.replace(0, np.nan).mean(axis=1, skipna=True).replace(np.nan, 0)
+            group_mean = df_group.replace(0, np.nan).mean(axis=1, skipna=True).replace(np.nan, 0)
             dict_avg["{} {}".format(lfq_str, group)] = group_mean
         df_lfq_mean = pd.DataFrame(dict_avg)
         df_lfq_mean = df_lfq_mean.replace(0, np.nan)
@@ -85,9 +79,9 @@ class PerseusComputations(PerseusBase):
             c) log2_out: boolean to indicate if return df in log2 scale
         Out:a) df_ratio: df with ratios for individual group comparison"""
         if log2_out:
-            ratio_str = "log2 ratio "
+            ratio_str = ut.STR_LOG2_RATIO
         else:
-            ratio_str = "ratio "
+            ratio_str = ut.STR_RATIO
         dict_group_col = dict(zip(self.list_groups, list(df_lfq_mean)))
         dict_ratio = {}
         ratio_pairs = []
@@ -100,6 +94,6 @@ class PerseusComputations(PerseusBase):
                                    log2_in=log2_in,
                                    log2_out=log2_out)
                     ratio_pairs.append({a, b})
-                    dict_ratio[ratio_str + "({}/{})".format(a, b)] = ratio
+                    dict_ratio[ratio_str + " ({}/{})".format(a, b)] = ratio
         df_ratio = pd.DataFrame(dict_ratio, index=df_lfq_mean.index)     # Set index of data frame
         return df_ratio
